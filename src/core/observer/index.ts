@@ -1,10 +1,14 @@
 import { hasOwn, isObject } from "../../shared";
+import { Dep } from "./dep";
 
 export interface TObject extends Object {
     [key: string]: any
 }
 
 export function defineReactive(obj: TObject, key: string, val?: any) {
+
+    const dep = new Dep() // 一个key 对应一个 dep 做依赖管理
+
     const property = Object.getOwnPropertyDescriptor(obj, key)
     const getter = property && property.get
     const setter = property && property.set
@@ -18,6 +22,7 @@ export function defineReactive(obj: TObject, key: string, val?: any) {
         get: function reactiveGetter() {
             const value = getter ? getter.call(obj) : val
             console.log(key, 'reactiveGetter', val);
+            dep.depend()
             return value
         },
         set: function reactiveSetter(newVal) {
@@ -28,6 +33,7 @@ export function defineReactive(obj: TObject, key: string, val?: any) {
                 val = newVal
             }
             childOb = observe(newVal)
+            dep.notify() // 通知更新
             console.log(key, 'reactiveSetter', newVal);
         }
     })
