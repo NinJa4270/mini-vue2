@@ -9,6 +9,10 @@ const vm = new Vue({
             }
         }
     },
-})
+    render(h) {
+        console.log('%cmain.js line:13 h', 'color: #007acc;', h);
+        // return h('div', {}, 'abc')
+    }
+}).$mount('#app')
 
 console.log('%cmain.js line:14 vm', 'color: #007acc;', vm);

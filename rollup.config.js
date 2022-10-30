@@ -1,7 +1,8 @@
 import typescript from "@rollup/plugin-typescript";
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 export default {
-    input: './src/index.ts',
+    // input: './src/index.ts',
+    input: './src/platforms/web/entry-runtime.ts',
     output: [
         {
             format: 'cjs',

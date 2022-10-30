@@ -26,3 +26,15 @@ export function parsePath(path: string): any {
 }
 
 export function noop(a?: any, b?: any, c?: any) { }
+
+export function query(el: string | Element): Element {
+    if (typeof el === 'string') {
+        const selected = document.querySelector(el)
+        if (!selected) {
+            return document.createElement('div')
+        }
+        return selected
+    } else {
+        return el
+    }
+}
