@@ -24,3 +24,5 @@ export function parsePath(path: string): any {
         return obj
     }
 }
+
+export function noop(a?: any, b?: any, c?: any) { }

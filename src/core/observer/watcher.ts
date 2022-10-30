@@ -1,4 +1,5 @@
-import { parsePath } from "src/shared";
+import { e } from "vitest/dist/index-40e0cb97";
+import { parsePath } from "../../shared";
 import { Dep, popTarget, pushTarget } from "./dep";
 
 export class Watcher {
@@ -12,18 +13,33 @@ export class Watcher {
     deps: never[];
     depIds: Set<number>;
     newDepIds: Set<number>;
-
-    constructor(vm: any, expOrFn: string, cb: any) {
+    lazy: boolean;
+    dirty: boolean;
+    constructor(vm: any, expOrFn: string, cb: any, options?: any) {
         this.vm = vm
         this.cb = cb
+
+        // 配置
+        if (options) {
+            this.lazy = !!options.lazy
+        } else {
+            this.lazy = false
+        }
+        this.dirty = this.lazy
+
         this.expression = expOrFn
-        this.getter = parsePath(expOrFn)
+        if (typeof expOrFn === 'function') {
+            this.getter = expOrFn
+
+        } else {
+            this.getter = parsePath(expOrFn)
+        }
         // fix 处理重复收集问题
         this.deps = []
         this.newDeps = []
         this.depIds = new Set()
         this.newDepIds = new Set()
-        this.value = this.get()
+        this.value = this.lazy ? undefined : this.get()
     }
 
     // 当前的 watcher 保存 dep
@@ -58,5 +74,17 @@ export class Watcher {
         const oldValue = this.value
         this.value = value
         this.cb.call(this.vm, value, oldValue)
+    }
+
+    evaluate() {
+        this.value = this.get()
+        this.dirty = false
+    }
+
+    depend() {
+        // let i = this.deps.length
+        // while (i--) {
+        //     this.deps[i].depend()
+        // }
     }
 }
