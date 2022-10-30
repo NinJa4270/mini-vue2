@@ -18,14 +18,11 @@ export class Watcher {
         this.cb = cb
         this.expression = expOrFn
         this.getter = parsePath(expOrFn)
-
         // fix 处理重复收集问题
         this.deps = []
         this.newDeps = []
         this.depIds = new Set()
         this.newDepIds = new Set()
-
-
         this.value = this.get()
     }
 
@@ -57,7 +54,6 @@ export class Watcher {
 
     // 同步更新
     run() {
-        console.log('%cwatcher.ts line:41 run 执行', 'color: #007acc;');
         const value = this.get()
         const oldValue = this.value
         this.value = value
