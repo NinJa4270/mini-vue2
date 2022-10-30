@@ -32,11 +32,13 @@ export class Dep {
 }
 
 Dep.target = null
-
-export function pushTarget(target: Watcher) {
-    Dep.target = target
+const targetStack: Watcher[] = []
+export function pushTarget(target?: Watcher) {
+    targetStack.push(target!)
+    Dep.target = target!
 }
 
 export function popTarget() {
-    Dep.target = null
+    targetStack.pop()
+    Dep.target = targetStack[targetStack.length - 1]
 }

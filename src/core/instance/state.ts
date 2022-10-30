@@ -1,9 +1,9 @@
-import { e } from "vitest/dist/index-40e0cb97";
 import { noop } from "../../shared";
-import { Dep } from "../observer/dep";
+import { observe } from "../observer";
+import { popTarget, pushTarget } from "../observer/dep";
 import { Watcher } from "../observer/watcher";
 const computedWatcherOptions = { lazy: true }
-const sharedPropertyDefinition = {
+const sharedPropertyDefinition: PropertyDescriptor & ThisType<any> = {
     enumerable: true,
     configurable: true,
     get: noop,
@@ -42,4 +42,53 @@ function createComputedGetter(key: string, watcher: Watcher) {
             return watcher.value
         }
     }
+}
+
+// 初始化状态
+export function initState(vm: any) {
+    vm._watchers = []
+    const opts = vm.$options
+
+    if (opts.data) {
+        initData(vm)
+    }
+}
+
+// 初始化 data 选项
+function initData(vm: any) {
+    let data = vm.$options.data
+    data = vm._data = typeof data === 'function'
+        ? getData(data, vm)
+        : data || {}
+
+    const keys = Object.keys(data)
+    let i = keys.length
+    while (i--) {
+        const key = keys[i]
+        // 将data中的值 通过 实例访问
+        proxy(vm, `_data`, key)
+    }
+    observe(data,)
+}
+
+// 如果data选项是函数 执行获取data选型 并禁止收集依赖
+export function getData(data: Function, vm: any): any {
+    pushTarget()
+    try {
+        return data.call(vm, vm)
+    } catch (e) {
+        console.log('%cstate.ts line:71 e', 'color: #007acc;', e);
+    } finally {
+        popTarget()
+    }
+}
+
+export function proxy(target: Object, sourceKey: string, key: string) {
+    sharedPropertyDefinition.get = function proxyGetter(this: any) {
+        return this[sourceKey][key]
+    }
+    sharedPropertyDefinition.set = function proxySetter(this: any, val) {
+        this[sourceKey][key] = val
+    }
+    Object.defineProperty(target, key, sharedPropertyDefinition)
 }
