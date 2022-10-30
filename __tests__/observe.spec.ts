@@ -31,7 +31,7 @@ describe('observe', () => {
         expect(obj.bar).toBe("text + object")
     })
 
-    test.only("observe reactive nested object", () => {
+    test("observe reactive nested object", () => {
         const obj: TObject = {
             baz: {
                 count: 100

@@ -1,9 +1,12 @@
 import { Watcher } from "./watcher";
 
+let uid = 0
 export class Dep {
     static target: Watcher | null;
+    id: number;
     subs: Watcher[];
     constructor() {
+        this.id = uid++
         this.subs = []
     }
 
