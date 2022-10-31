@@ -1,9 +1,24 @@
 import { isDef, isUndef } from "src/shared";
 import VNode from "./vnode";
 
+
+const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
+
 export function createPatchFunction(backend: any) {
 
-    const { nodeOps } = backend
+    const { modules, nodeOps } = backend
+
+    const cbs: any = {} // 处理属性相关的 hooks
+
+    for (let i = 0; i < hooks.length; ++i) {
+        cbs[hooks[i]] = []
+        for (let j = 0; j < modules.length; ++j) {
+            if (isDef(modules[j][hooks[i]])) {
+                cbs[hooks[i]].push(modules[j][hooks[i]])
+            }
+        }
+    }
+
 
     function createElm(vnode: VNode, parentElm: any) {
         console.log('%cpatch.ts line:9 vnode', 'color: #007acc;', vnode);
@@ -13,6 +28,10 @@ export function createPatchFunction(backend: any) {
         if (isDef(tag)) {
             vnode.elm = nodeOps.createElement(tag, vnode)
             createChildren(vnode, children)
+            if (isDef(data)) {
+                // 处理 data 上的属性
+                invokeCreateHooks(vnode)
+            }
             insert(parentElm, vnode.elm!)
         } else {
             vnode.elm = nodeOps.createTextNode(vnode.text) as Text
@@ -22,7 +41,7 @@ export function createPatchFunction(backend: any) {
 
     function createChildren(vnode: VNode, children?: unknown[]) {
         if (Array.isArray(children)) {
-            //  h('div',{},[...])
+            //  h('div',{},[...])sdf
             for (let i = 0; i < children.length; ++i) {
                 createElm(children[i], vnode.elm)
             }
@@ -40,6 +59,12 @@ export function createPatchFunction(backend: any) {
 
     function emptyNodeAt(elm: any) {
         return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
+    }
+
+    function invokeCreateHooks(vnode: VNode) {
+        for (let i = 0; i < cbs.create.length; ++i) {
+            cbs.create[i](vnode)
+        }
     }
 
     return function patch(oldVnode: any, vnode: VNode) {
