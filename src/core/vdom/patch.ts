@@ -19,9 +19,7 @@ export function createPatchFunction(backend: any) {
         }
     }
 
-
     function createElm(vnode: VNode, parentElm: any) {
-        console.log('%cpatch.ts line:9 vnode', 'color: #007acc;', vnode);
         const data = vnode.data
         const children = vnode.children
         const tag = vnode.tag
@@ -41,7 +39,6 @@ export function createPatchFunction(backend: any) {
 
     function createChildren(vnode: VNode, children?: unknown[]) {
         if (Array.isArray(children)) {
-            //  h('div',{},[...])sdf
             for (let i = 0; i < children.length; ++i) {
                 createElm(children[i], vnode.elm)
             }
