@@ -9,8 +9,6 @@ export function renderMixin(Vue: any) {
     Vue.prototype._render = function () {
         const vm = this
         const { render } = vm.$options
-        console.log('%crender.ts line:14 vm.$createElement', 'color: #007acc;', vm);
-
         const vnode = render.call(vm._renderProxy, vm.$createElement)
         return vnode
     }

@@ -38,3 +38,21 @@ export function query(el: string | Element): Element {
         return el
     }
 }
+
+export function isUndef(v: any): boolean {
+    return v === undefined || v === null
+}
+
+export function isDef(v: any): boolean {
+    return v !== undefined && v !== null
+}
+
+export function isPrimitive(value: any): boolean {
+    return (
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        // $flow-disable-line
+        typeof value === 'symbol' ||
+        typeof value === 'boolean'
+    )
+}
