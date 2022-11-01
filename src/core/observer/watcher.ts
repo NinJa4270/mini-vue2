@@ -4,7 +4,7 @@ import { Dep, popTarget, pushTarget } from "./dep";
 
 export class Watcher {
     cb: any;
-    expression: string;
+    expression: string | Function;
     getter: any;
     vm: any;
     value: any;
@@ -15,8 +15,11 @@ export class Watcher {
     newDepIds: Set<number>;
     lazy: boolean;
     dirty: boolean;
-    constructor(vm: any, expOrFn: string, cb: any, options?: any) {
+    constructor(vm: any, expOrFn: string | Function, cb: any, options?: any, isRenderWatcher?: boolean) {
         this.vm = vm
+        if (isRenderWatcher) {  // 渲染watcher
+            vm._watcher = this
+        }
         this.cb = cb
 
         // 配置
@@ -28,6 +31,7 @@ export class Watcher {
         this.dirty = this.lazy
 
         this.expression = expOrFn
+
         if (typeof expOrFn === 'function') {
             this.getter = expOrFn
 

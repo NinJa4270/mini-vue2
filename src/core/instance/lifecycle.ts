@@ -1,3 +1,5 @@
+import { noop } from "src/shared"
+import { Watcher } from "../observer/watcher"
 import VNode from "../vdom/vnode"
 
 export let activeInstance: any = null
@@ -12,7 +14,8 @@ export function setActiveInstance(vm: any) {
 
 export function mountComponent(vm: any, el?: Element) {
     vm.$el = el
-    vm._update(vm._render())
+    const updateComponent = () => vm._update(vm._render())
+    new Watcher(vm, updateComponent, noop, {}, true)
     return vm
 }
 
@@ -45,4 +48,5 @@ export function initLifecycle(vm: any) {
     vm.$root = parent ? parent.$root : vm
     vm.$children = []
 
+    vm._watcher = null // 保存组件watcher
 }
