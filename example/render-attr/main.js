@@ -10,7 +10,7 @@ const vm = new Vue({
         }
     },
     render(h) {
-        return h('div', { class: 'test', style: "color:#FFF" }, [this.bar.baz, h('p', { style: "background:#000" }, 'helow')])
+        return h('div', { class: 'test', style: "color:#FFF" }, [this.bar.baz, h('p', { style: "background:#000" }, 'hello')])
     }
 }).$mount('#app')
 

@@ -19,7 +19,10 @@ export function createPatchFunction(backend: any) {
         }
     }
 
-    function createElm(vnode: VNode, parentElm: any) {
+    function createElm(vnode: VNode, parentElm?: any) {
+        if (createComponent(vnode, parentElm)) {
+            return
+        }
         const data = vnode.data
         const children = vnode.children
         const tag = vnode.tag
@@ -64,10 +67,32 @@ export function createPatchFunction(backend: any) {
         }
     }
 
+    function createComponent(vnode: VNode, parentElm: any) {
+        let i = vnode.data
+        if (i) {
+            if (isDef(i = i.hook) && isDef(i = i.init)) {
+                i(vnode)
+            }
+            if (isDef(vnode.componentInstance)) {
+                initComponent(vnode)
+                insert(parentElm, vnode.elm!)
+                return true
+            }
+        }
+
+        return false
+    }
+
+    // 组件初始化
+    function initComponent(vnode: VNode) {
+        vnode.elm = vnode.componentInstance!.$el
+    }
+
     return function patch(oldVnode: any, vnode: VNode) {
         // 首次渲染
         if (isUndef(oldVnode)) {
             // 创建空元素
+            createElm(vnode)
         } else {
             const isRealElement = isDef(oldVnode.nodeType)
             if (isRealElement) {
@@ -77,5 +102,6 @@ export function createPatchFunction(backend: any) {
             const parentElm = nodeOps.parentNode(oldElm)
             createElm(vnode, parentElm)
         }
+        return vnode.elm
     }
 }
